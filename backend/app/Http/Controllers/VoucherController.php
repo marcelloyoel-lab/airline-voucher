@@ -16,7 +16,7 @@ class VoucherController extends Controller
 
     }
 
-    public function check(CheckVoucherRequest $request, VoucherService $voucherService)
+    public function check(CheckVoucherRequest $request)
     {
         $exists = $this->voucherService->check(
             $request->validated()
@@ -32,6 +32,8 @@ class VoucherController extends Controller
             $request->validated()
         );
 
-        return new GenerateVoucherResource($voucher);
+        return (new GenerateVoucherResource($voucher))
+        ->response()
+        ->setStatusCode(201);
     }
 }
