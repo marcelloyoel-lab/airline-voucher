@@ -1,0 +1,32 @@
+### Valid
+POST http://backend.test/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GA402",
+    "date": "2025-07-12"
+}
+
+###
+
+### Missing Date
+POST http://backend.test/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GA402"
+}
+
+###
+
+### Invalid Flight Number
+POST http://backend.test/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "ABC123",
+    "date": "2025-07-12"
+}
