@@ -8,3 +8,4 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 Route::post('/check', [VoucherController::class, 'check']);
+Route::post('/generate', [VoucherController::class, 'generate']);

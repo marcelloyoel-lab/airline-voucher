@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckVoucherRequest;
+use App\Http\Requests\GenerateVoucherRequest;
 use App\Http\Resources\CheckVoucherResource;
+use App\Http\Resources\GenerateVoucherResource;
 use App\Services\VoucherService;
 use Illuminate\Http\Request;
 
@@ -23,5 +25,13 @@ class VoucherController extends Controller
         return new CheckVoucherResource([
             'exists' => $exists,
         ]);
+    }
+
+    public function generate(GenerateVoucherRequest $request){
+        $voucher = $this->voucherService->generate(
+            $request->validated()
+        );
+
+        return new GenerateVoucherResource($voucher);
     }
 }

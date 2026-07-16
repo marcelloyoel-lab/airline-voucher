@@ -1,0 +1,166 @@
+@baseUrl = http://backend.test
+
+##################################################
+# CHECK VOUCHER
+##################################################
+
+### Check - Voucher Does Not Exist
+POST {{baseUrl}}/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GA402",
+    "date": "2026-07-16"
+}
+
+###
+
+### Check - Voucher Already Exists
+POST {{baseUrl}}/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GA401",
+    "date": "2026-07-16"
+}
+
+###
+
+### Check - Missing Flight Number
+POST {{baseUrl}}/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "date": "2026-07-16"
+}
+
+###
+
+### Check - Missing Date
+POST {{baseUrl}}/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GA402"
+}
+
+###
+
+### Check - Invalid Flight Number
+POST {{baseUrl}}/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GIA402",
+    "date": "2026-07-16"
+}
+
+###
+
+### Check - Invalid Date Format
+POST {{baseUrl}}/api/check
+Accept: application/json
+Content-Type: application/json
+
+{
+    "flightNumber": "GA402",
+    "date": "16-07-2026"
+}
+
+##################################################
+# GENERATE VOUCHER
+##################################################
+
+###
+
+### Generate Voucher - Success
+POST {{baseUrl}}/api/generate
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "id": "EMP001",
+    "flightNumber": "GA402",
+    "date": "2026-07-16",
+    "aircraft": "ATR"
+}
+
+###
+
+### Generate Voucher - Duplicate Flight
+POST {{baseUrl}}/api/generate
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Jane Doe",
+    "id": "EMP002",
+    "flightNumber": "GA402",
+    "date": "2026-07-16",
+    "aircraft": "ATR"
+}
+
+###
+
+### Generate Voucher - Missing Crew Name
+POST {{baseUrl}}/api/generate
+Accept: application/json
+Content-Type: application/json
+
+{
+    "id": "EMP001",
+    "flightNumber": "GA402",
+    "date": "2026-07-16",
+    "aircraft": "ATR"
+}
+
+###
+
+### Generate Voucher - Invalid Flight Number
+POST {{baseUrl}}/api/generate
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "id": "EMP001",
+    "flightNumber": "GIA402",
+    "date": "2026-07-16",
+    "aircraft": "ATR"
+}
+
+###
+
+### Generate Voucher - Invalid Date
+POST {{baseUrl}}/api/generate
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "id": "EMP001",
+    "flightNumber": "GA402",
+    "date": "16-07-2026",
+    "aircraft": "ATR"
+}
+
+###
+
+### Generate Voucher - Invalid Aircraft
+POST {{baseUrl}}/api/generate
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "id": "EMP001",
+    "flightNumber": "GA402",
+    "date": "2026-07-16",
+    "aircraft": "Concorde"
+}
