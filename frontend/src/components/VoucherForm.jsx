@@ -1,7 +1,7 @@
 import { useState } from "react";
 import voucherService from "../services/voucherService";
 
-function VoucherForm({ setSeats }) {
+function VoucherForm({ setSeats, setMessage }) {
   const [form, setForm] = useState({
     name: "",
     id: "",
@@ -11,6 +11,8 @@ function VoucherForm({ setSeats }) {
   });
 
   const [errors, setErrors] = useState({});
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -24,6 +26,11 @@ function VoucherForm({ setSeats }) {
       ...prevErrors,
       [name]: "",
     }));
+
+    setMessage({
+      type: "",
+      text: "",
+    });
   };
 
   const validateForm = () => {
@@ -57,11 +64,21 @@ function VoucherForm({ setSeats }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (loading) {
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
 
+    setMessage({
+      type: "",
+      text: "",
+    });
+
     try {
+      setLoading(true);
       setSeats([]);
 
       const checkResponse = await voucherService.checkVoucher({
@@ -70,7 +87,10 @@ function VoucherForm({ setSeats }) {
       });
 
       if (checkResponse.data.exists) {
-        alert("A voucher for this flight and date already exists.");
+        setMessage({
+          type: "warning",
+          text: "A voucher for this flight and date already exists.",
+        });
         return;
       }
 
@@ -78,11 +98,21 @@ function VoucherForm({ setSeats }) {
 
       if (generateResponse.data.success) {
         setSeats(generateResponse.data.seats);
+
+        setMessage({
+          type: "success",
+          text: "Vouchers generated successfully.",
+        });
       }
     } catch (error) {
       console.error(error);
 
-      alert("Something went wrong. Please try again.");
+      setMessage({
+        type: "danger",
+        text: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -171,8 +201,12 @@ function VoucherForm({ setSeats }) {
             <div className="invalid-feedback">{errors.aircraft}</div>
           </div>
 
-          <button type="submit" className="btn btn-primary w-100">
-            Generate Vouchers
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={loading}
+          >
+            {loading ? "Generating..." : "Generate Vouchers"}
           </button>
         </form>
       </div>
