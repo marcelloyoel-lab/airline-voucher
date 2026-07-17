@@ -107,10 +107,28 @@ function VoucherForm({ setSeats, setMessage }) {
     } catch (error) {
       console.error(error);
 
-      setMessage({
-        type: "danger",
-        text: "Something went wrong. Please try again.",
-      });
+      if (error.response?.status === 422) {
+        const errors = error.response.data.errors;
+
+        const firstError = errors
+          ? Object.values(errors)[0][0]
+          : "Validation failed.";
+
+        setMessage({
+          type: "danger",
+          text: firstError,
+        });
+      } else if (!error.response) {
+        setMessage({
+          type: "danger",
+          text: "Unable to connect to the server.",
+        });
+      } else {
+        setMessage({
+          type: "danger",
+          text: "An unexpected server error occurred.",
+        });
+      }
     } finally {
       setLoading(false);
     }
