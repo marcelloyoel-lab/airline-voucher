@@ -1,11 +1,12 @@
 import { useState } from "react";
+import voucherService from "../services/voucherService";
 
-function VoucherForm() {
+function VoucherForm({ setSeats }) {
   const [form, setForm] = useState({
-    crewName: "",
-    crewId: "",
+    name: "",
+    id: "",
     flightNumber: "",
-    flightDate: "",
+    date: "",
     aircraft: "",
   });
 
@@ -28,20 +29,20 @@ function VoucherForm() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.crewName.trim()) {
-      newErrors.crewName = "Crew Name is required.";
+    if (!form.name.trim()) {
+      newErrors.name = "Crew Name is required.";
     }
 
-    if (!form.crewId.trim()) {
-      newErrors.crewId = "Crew ID is required.";
+    if (!form.id.trim()) {
+      newErrors.id = "Crew ID is required.";
     }
 
     if (!form.flightNumber.trim()) {
       newErrors.flightNumber = "Flight Number is required.";
     }
 
-    if (!form.flightDate) {
-      newErrors.flightDate = "Flight Date is required.";
+    if (!form.date) {
+      newErrors.date = "Flight Date is required.";
     }
 
     if (!form.aircraft) {
@@ -53,14 +54,36 @@ function VoucherForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    console.log(form);
+    try {
+      setSeats([]);
+
+      const checkResponse = await voucherService.checkVoucher({
+        flightNumber: form.flightNumber,
+        date: form.date,
+      });
+
+      if (checkResponse.data.exists) {
+        alert("A voucher for this flight and date already exists.");
+        return;
+      }
+
+      const generateResponse = await voucherService.generateVoucher(form);
+
+      if (generateResponse.data.success) {
+        setSeats(generateResponse.data.seats);
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -74,14 +97,14 @@ function VoucherForm() {
 
             <input
               type="text"
-              name="crewName"
-              value={form.crewName}
+              name="name"
+              value={form.name}
               onChange={handleChange}
-              className={`form-control ${errors.crewName ? "is-invalid" : ""}`}
+              className={`form-control ${errors.name ? "is-invalid" : ""}`}
               placeholder="Enter crew name"
             />
 
-            <div className="invalid-feedback">{errors.crewName}</div>
+            <div className="invalid-feedback">{errors.name}</div>
           </div>
 
           <div className="mb-3">
@@ -89,14 +112,14 @@ function VoucherForm() {
 
             <input
               type="text"
-              name="crewId"
-              value={form.crewId}
+              name="id"
+              value={form.id}
               onChange={handleChange}
-              className={`form-control ${errors.crewId ? "is-invalid" : ""}`}
+              className={`form-control ${errors.id ? "is-invalid" : ""}`}
               placeholder="Enter crew ID"
             />
 
-            <div className="invalid-feedback">{errors.crewId}</div>
+            <div className="invalid-feedback">{errors.id}</div>
           </div>
 
           <div className="mb-3">
@@ -121,15 +144,13 @@ function VoucherForm() {
 
             <input
               type="date"
-              name="flightDate"
-              value={form.flightDate}
+              name="date"
+              value={form.date}
               onChange={handleChange}
-              className={`form-control ${
-                errors.flightDate ? "is-invalid" : ""
-              }`}
+              className={`form-control ${errors.date ? "is-invalid" : ""}`}
             />
 
-            <div className="invalid-feedback">{errors.flightDate}</div>
+            <div className="invalid-feedback">{errors.date}</div>
           </div>
 
           <div className="mb-4">
